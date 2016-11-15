@@ -44,14 +44,13 @@ if __name__=='__main__':
     start_time = time.time()
 
     try:
-        while True:
-            for doc_number in os.listdir(DOCTYPE+"/"+YEAR):
-                if doc_already_in_data_matrix('data_matrix.csv', DOCTYPE+"/"+YEAR+"/"+doc_number):
-                    continue
-                print("Creating data matrix for {}".format(doc_number))
-                add_file_to_data_matrix('data_matrix.csv', DOCTYPE+"/"+YEAR+"/"+doc_number)
-                write_to_log_file(DOCTYPE, YEAR, doc_number, start_time, time.time())
-                time.sleep(.15)
+        for doc_number in os.listdir(DOCTYPE+"/"+YEAR):
+            if doc_already_in_data_matrix('data_matrix.csv', DOCTYPE+"/"+YEAR+"/"+doc_number):
+                continue
+            print("Creating data matrix for {}".format(doc_number))
+            add_file_to_data_matrix('data_matrix.csv', DOCTYPE+"/"+YEAR+"/"+doc_number)
+            write_to_log_file(DOCTYPE, YEAR, doc_number, start_time, time.time())
+            time.sleep(.15)
     except KeyboardInterrupt:
         print("Quitting")
         sys.exit()
