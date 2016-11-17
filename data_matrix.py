@@ -6,18 +6,18 @@ from string import punctuation
 target_labels = ['TITL', 'ABST', 'DDBK', 'DDSM', 'DDDD', 'CLI', 'CLD']
 
 def add_new_word(data_matrix, new_word):
-	"""
+	r"""
 	If a new word is found which is not already in the data matrix,
 	a column of zeros is added for previous documents
 	Takes a data_matrix name, new word string as inputs
 	>>> dm_rows = [['PATENT_NO', 'hello', 'world', 'my', 'name', 'is', 'john'], ['012938292', '1', '1', '1', '1', '1', '1'], ['0123456', '3', '4', '1', '1', '5', '1']]
 	>>> import csv
 	>>> f=open('TEMP.csv', 'w')
-	>>> writer=csv.writer(f)
+	>>> writer=csv.writer(f, lineterminator='\n')
 	>>> for row in dm_rows: writer.writerow(row)
-	39
-	23
-	21
+	38
+	22
+	20
 	>>> f.close()
 	>>> add_new_word('TEMP.csv', 'hi')
 	>>> f=open('TEMP.csv', 'r')
@@ -47,14 +47,16 @@ def add_new_word(data_matrix, new_word):
 
 def add_file_to_data_matrix(data_matrix, new_file):
 	r"""
+	Returns the number of words added contributed to the data matrix
+	by the present file
 	>>> import csv
 	>>> dm_rows = [['PATENT_NO', 'hello', 'world', 'my', 'name', 'is', 'john'], ['012938292', '1', '1', '1', '1', '1', '1'], ['0123456', '3', '4', '1', '1', '5', '1']]
 	>>> f=open('TEMP.csv', 'w')
-	>>> writer=csv.writer(f)
+	>>> writer=csv.writer(f, lineterminator='\n')
 	>>> for row in dm_rows: writer.writerow(row)
-	39
-	23
-	21
+	38
+	22
+	20
 	>>> f.close()
 	>>> new_file_text = "ABST:: Is this a dagger I see before me?\nDDHM:: Or art thou but a dagger of the mind?\n"
 	>>> f=open('TEMP_NEW_FILE.csv', 'w')
@@ -62,21 +64,23 @@ def add_file_to_data_matrix(data_matrix, new_file):
 	86
 	>>> f.close()
 	>>> add_file_to_data_matrix('TEMP.csv', 'TEMP_NEW_FILE.csv')
+	14
 	>>> f=open('TEMP.csv', 'r')
 	>>> for line in f: print(line,end='')
-	PATENT_NO,hello,world,my,name,is,john,this,a,dagger,i,see,before,me
-	012938292,1,1,1,1,1,1,0,0,0,0,0,0,0
-	0123456,3,4,1,1,5,1,0,0,0,0,0,0,0
-	TEMP_NEW_FILE.csv,0,0,0,0,1,0,1,1,1,1,1,1,1
+	PATENT_NO,hello,world,my,name,is,john,this,a,dagger,i,see,before,me,or,art,thou,but,of,the,mind
+	012938292,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+	0123456,3,4,1,1,5,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+	TEMP_NEW_FILE.csv,0,0,0,0,1,0,1,2,2,1,1,1,1,1,1,1,1,1,1,1
 	>>> f=open('TEMP_EMPTY_MATRIX.csv', 'w')
 	>>> f.write('PATENT_NO')
 	9
 	>>> f.close()
 	>>> add_file_to_data_matrix('TEMP_EMPTY_MATRIX.csv', 'TEMP_NEW_FILE.csv')
+	15
 	>>> f=open('TEMP_EMPTY_MATRIX.csv', 'r')
 	>>> for line in f: print(line,end='')
-	PATENT_NO,is,this,a,dagger,i,see,before,me
-	TEMP_NEW_FILE.csv,1,1,1,1,1,1,1,1
+	PATENT_NO,is,this,a,dagger,i,see,before,me,or,art,thou,but,of,the,mind
+	TEMP_NEW_FILE.csv,1,1,2,2,1,1,1,1,1,1,1,1,1,1,1
 	"""
 	# Generate list of words already in data matrix
 	# Store words in list dm_words
@@ -88,9 +92,10 @@ def add_file_to_data_matrix(data_matrix, new_file):
 			break
 	word_dict = {word: 0 for word in dm_words}
 
-	# Open input file, split at "::" to check heading; if in appropriate heading, words counted
+	# Open input file, split at "::" to remove heading
 	# Words stripped of punctuation, split on whitespace
 	# Words counted and stored in dictionary word_dict
+	new_words_added = 0
 	with open(new_file, 'r') as f:
 		for line in f:
 			try:
@@ -103,6 +108,7 @@ def add_file_to_data_matrix(data_matrix, new_file):
 							dm_words.append(word)
 							word_dict[word] = 1
 							add_new_word(data_matrix, word)
+							new_words_added += 1
 			except:
 				pass
 	# Generate list of values in order of words in original data_matrix
@@ -114,6 +120,8 @@ def add_file_to_data_matrix(data_matrix, new_file):
 		writer = csv.writer(new_data_matrix, lineterminator='\n')
 		writer.writerow(new_row)
 
+	return new_words_added
+
 def doc_already_in_data_matrix(data_matrix, new_file):
 	"""
 	If target file is already recorded in data_matrix,
@@ -124,7 +132,48 @@ def doc_already_in_data_matrix(data_matrix, new_file):
 		documents = [line[0] for line in reader]
 	if new_file in documents: return True
 	return False
-	
+
+def check_up(year, batch_number):
+	"""
+	Make sure data_matrix is being constructed correctly.
+NOTDONE		A) The Log File and the Data Matrix should be of the same length
+NOTDONE		B) Each Document Number in the Log File should be present in Data Matrix
+NOTDONE		C) All words in Data Matrix header should be alphabetic only
+		D) Number of words added recording in Log File should match the number
+		   of columns in the Data Matrix header
+	"""
+	dm_name = str(year) + "_" + str(batch_number) + "_data_matrix.csv"
+	lf_name = str(year) + "_" + str(batch_number) + "_log_file.txt"
+
+	dm_lines = sum(1 for line in open(dm_name,'r'))
+	lf_lines = sum(1 for line in open(lf_name,'r'))
+	if dm_lines != lf_lines:
+		raise ValueError("DATA MATRIX HAS DIFFERENT NUMBER OF LINES THAN LOG FILE")
+
+	with open(dm_name,'r') as dm:
+		with open(lf_name, 'r') as lf:
+			dm_reader = csv.reader(dm)
+			dm_numbers = [line[0] for line in dm_reader]
+			lf_numbers = [line.split()[0] for line in lf]
+	if dm_numbers != lf_numbers:
+		print(dm_numbers)
+		print(lf_numbers)
+		raise ValueError("DATA MATRIX CONTAINS DIFFERENT DOCUMENTS THAN LOG FILE")
+
+	with open(dm_name,'r') as dm:
+		dm_reader = csv.reader(dm)
+		for line in dm_reader:
+			words = line[1:]
+			break
+	for word in words:
+		if not word.isalpha():
+			raise ValueError("DATA MATRIX CONTAINS NON-ALPHABETIC WORD")
+
+	with open(lf_name,'r') as lf:
+		line = next(lf)
+		lf_words = sum([float(line.split(" --- ")[2].split()[0]) for line in lf])
+	if len(words) != lf_words:
+		raise ValueError("DATA MATRIX AND LOG FILE COUNT DIFFERENT NUMBER OF WORDS")
 
 if __name__=='__main__':
 	import doctest
