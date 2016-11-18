@@ -4,7 +4,6 @@ import csv
 from string import punctuation
 from trie import *
 
-target_labels = ['TITL', 'ABST', 'DDBK', 'DDSM', 'DDDD', 'CLI', 'CLD']
 
 def add_new_word(data_matrix, new_word):
 	r"""
@@ -38,6 +37,7 @@ def add_new_word(data_matrix, new_word):
 	dm_rows[0].append(new_word)
 	for row in dm_rows[1:]:
 		row.append('0')
+
 
 	# Rewrite results to original data_matrix file
 	with open(data_matrix, 'w') as new_data_matrix:
@@ -91,7 +91,7 @@ def add_file_to_data_matrix(data_matrix, new_file):
 		for line in reader:
 			dm_words=line[1:]
 			break
-	#word_dict = {word: 0 for word in dm_words}
+	
 	trie = Trie()
 	for word in dm_words:
 		trie.insert(word)
@@ -102,24 +102,15 @@ def add_file_to_data_matrix(data_matrix, new_file):
 	new_words_added = 0
 	with open(new_file, 'r') as f:
 		for line in f:
-			try:
-				words = ''.join([char for char in line.split("::")[1].lower().strip() if not char in punctuation]).split()
-				for word in words:
-					if word.isalpha():
-						new_word = trie.count(word)
-						#if word in word_dict:
-						#	word_dict[word] += 1
-						#else:
-						#	dm_words.append(word)
-						#	word_dict[word] = 1
-						if new_word:
-							add_new_word(data_matrix, word)
-							new_words_added += 1
-			except:
-				pass
+			new_words = trie.count_line(line)
+			for new_word in new_words:
+				add_new_word(data_matrix, new_word)
+				new_words_added += 1
+			dm_words += new_words
+
+
 	# Generate list of values in order of words in original data_matrix
 	values = [str(trie.get_val(word)) for word in dm_words]
-	#values = [str(word_dict[word]) for word in dm_words]
 	new_row = [new_file] + values
 
 	# Append new row of values to data_matrix
