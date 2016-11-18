@@ -45,9 +45,3 @@ Pat/2015/08932887 --- 4937.665520620346 minutes --- 84 new words added
 Pat/2015/08932888 --- 5056.464503657818 minutes --- 71 new words added
 Pat/2015/08932889 --- 5175.440932750702 minutes --- 152 new words added
 Pat/2015/08932890 --- 5294.628533899784 minutes --- 174 new words added
-Pat/2015/08932891 --- 5413.861390781402 minutes --- 36 new words added
-Pat/2015/08932892 --- 5533.1392081618305 minutes --- 35 new words added
-Pat/2015/08932893 --- 5652.622101167838 minutes --- 146 new words added
-Pat/2015/08932894 --- 5772.3083869139355 minutes --- 150 new words added
-Pat/2015/08932895 --- 5892.03490733703 minutes --- 27 new words added
-Pat/2015/08932896 --- 6011.8726738929745 minutes --- 68 new words added
