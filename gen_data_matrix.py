@@ -74,11 +74,11 @@ if __name__=='__main__':
     YEAR=sys.argv[2]
     check_doc_year_path(DOCTYPE, YEAR)
     start_time = time.time()
+    batch_number = 100
 
     docs = (doc for doc in sorted(os.listdir(DOCTYPE+"/"+YEAR)))
     dm_name = "Data_Matrices/" + str(YEAR) + "_" + str(batch_number) + "_data_matrix.csv"
     lf_name = "Log_Files/" + str(YEAR) + "_" + str(batch_number) + "_log_file.txt"
-    batch_number = 100
     while True:
         try:
             for i in range(100):
