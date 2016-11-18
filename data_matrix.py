@@ -142,13 +142,13 @@ NOTDONE		C) All words in Data Matrix header should be alphabetic only
 		D) Number of words added recording in Log File should match the number
 		   of columns in the Data Matrix header
 	"""
-	dm_name = str(year) + "_" + str(batch_number) + "_data_matrix.csv"
-	lf_name = str(year) + "_" + str(batch_number) + "_log_file.txt"
+	dm_name = "Data_Matrices/"+str(year) + "_" + str(batch_number) + "_data_matrix.csv"
+	lf_name = "Log_Files/"+str(year) + "_" + str(batch_number) + "_log_file.txt"
 
 	dm_lines = sum(1 for line in open(dm_name,'r'))
 	lf_lines = sum(1 for line in open(lf_name,'r'))
 	if dm_lines != lf_lines:
-		raise ValueError("DATA MATRIX HAS DIFFERENT NUMBER OF LINES THAN LOG FILE")
+		raise ValueError("DATA MATRIX {}_{} HAS DIFFERENT NUMBER OF LINES THAN LOG FILE".format(year, batch_number))
 
 	with open(dm_name,'r') as dm:
 		with open(lf_name, 'r') as lf:
@@ -158,7 +158,7 @@ NOTDONE		C) All words in Data Matrix header should be alphabetic only
 	if dm_numbers != lf_numbers:
 		print(dm_numbers)
 		print(lf_numbers)
-		raise ValueError("DATA MATRIX CONTAINS DIFFERENT DOCUMENTS THAN LOG FILE")
+		raise ValueError("DATA MATRIX {}_{} CONTAINS DIFFERENT DOCUMENTS THAN LOG FILE".format(year, batch_number))
 
 	with open(dm_name,'r') as dm:
 		dm_reader = csv.reader(dm)
@@ -167,13 +167,13 @@ NOTDONE		C) All words in Data Matrix header should be alphabetic only
 			break
 	for word in words:
 		if not word.isalpha():
-			raise ValueError("DATA MATRIX CONTAINS NON-ALPHABETIC WORD")
+			raise ValueError("DATA MATRIX {}_{} CONTAINS NON-ALPHABETIC WORD".format(year, batch_number))
 
 	with open(lf_name,'r') as lf:
 		line = next(lf)
 		lf_words = sum([float(line.split(" --- ")[2].split()[0]) for line in lf])
 	if len(words) != lf_words:
-		raise ValueError("DATA MATRIX AND LOG FILE COUNT DIFFERENT NUMBER OF WORDS")
+		raise ValueError("DATA MATRIX {}_{} AND LOG FILE COUNT DIFFERENT NUMBER OF WORDS".format(year, batch_number))
 
 if __name__=='__main__':
 	import doctest
