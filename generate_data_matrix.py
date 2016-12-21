@@ -1,21 +1,46 @@
 #!/usr/bin/env python3
 
-
-################################
-"""
-FUTURE JOHN, SET THIS UP TO WORK ON BATCHES OF A HUNDRED
-THIS WILL SAVE YOU HEARTACHE IN THE FUTURE
-BUT REQUIRES A REWRITE OF HOW YOU DID STUFF BELOW, EACH ONE NEEDS THE BATCH NUMBER
-IN THE FILE NAME FROM THE START. DO IT
-"""
-
-
 import sys, os, time
 from shutil import copyfile
 from subprocess import call
-from trie_data_matrix import *
+from data_matrix_utils import *
 from trie import *
 
+"""
+Constructs data matrices from patent document text files of the format:
+
+	PATENT_NO,word,word,word...
+	TYPE/YEAR/NUMBER,count,count,count...
+	TYPE/YEAR/NUMBER,count,count,count...
+	...
+
+Documents are processed in batches of 100 for convenience. Use keyboard interrupt to
+  halt processing. Back up files are written to present directory every ten documents to
+  ensure halting progress does not result in significant loss of data.
+
+Specify document type (patent or application) and year to begin data matrix construction.
+  If data matrix for a given document already exists, given document is skipped. To skip
+  checking for documents which already exist, specify the latest batch number which has
+  already been processed (specify multiple of 100).
+
+Assumes presence of directory structure:
+
+	Current Directory
+	   Data_Matrices
+	   Log_Files
+	   Pat
+	      2005
+	      2006
+	      ...
+	   App
+	      2005
+	      2006
+	      ...
+
+Log files contain list of document numbers added for each batch of 100 documents, as well
+  as the time to write a document and the number of original words contributed by each
+  document.
+"""
 def check_right_num_arguments():
     if len(sys.argv) == 4:
         if int(sys.argv[3])%100 != 0:
@@ -110,16 +135,19 @@ if __name__=='__main__':
                 if i%10 == 5:
                     write_back_ups(YEAR, batch_number)
             batch_number += 100
+
+            # PUSH DATA MATRICES AND LOGS TO GIT FOR SAFE KEEPING
             os.system("git add Data_Matrices")
             os.system("git add Log_Files")
             os.system("git commit -m 'Updated matrices and logs'")
             os.system("git push origin master")
+
             dm_name = "Data_Matrices/" + str(YEAR) + "_" + str(batch_number) + "_data_matrix.csv"
             lf_name = "Log_Files/" + str(YEAR) + "_" + str(batch_number) + "_log_file.txt"
 
 
         except StopIteration:
-            print("ALL DOCUMENTS IN "+DOCTYPE+"/"+YEAR+" parsed")
+            print("ALL DOCUMENTS IN "+DOCTYPE+"/"+YEAR+" PARSED")
             break
         except KeyboardInterrupt:
             print("Quitting")

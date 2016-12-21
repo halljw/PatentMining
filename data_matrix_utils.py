@@ -1,10 +1,13 @@
 #!/usr/bin/env python3
 
-import csv
+import csv, os
 from string import punctuation
 from trie import *
 
-
+"""
+Methods used in generating data matrices from patent text documents.
+Includes methods for ensuring matrices are being generated correctly.
+"""
 def add_new_word(data_matrix, new_word):
 	r"""
 	If a new word is found which is not already in the data matrix,
@@ -25,6 +28,7 @@ def add_new_word(data_matrix, new_word):
 	PATENT_NO,hello,world,my,name,is,john,hi
 	012938292,1,1,1,1,1,1,0
 	0123456,3,4,1,1,5,1,0
+	>>> os.remove('TEMP.csv')
 	"""
 
 	# Read old data_matrix into dm_rows
@@ -82,6 +86,9 @@ def add_file_to_data_matrix(data_matrix, new_file):
 	>>> for line in f: print(line,end='')
 	PATENT_NO,is,this,a,dagger,i,see,before,me,or,art,thou,but,of,the,mind
 	TEMP_NEW_FILE.csv,1,1,2,2,1,1,1,1,1,1,1,1,1,1,1
+	>>> os.remove('TEMP_EMPTY_MATRIX.csv')
+	>>> os.remove('TEMP.csv')
+	>>> os.remove('TEMP_NEW_FILE.csv')
 	"""
 	# Generate list of words already in data matrix
 	# Store words in list dm_words
@@ -134,9 +141,9 @@ def doc_already_in_data_matrix(data_matrix, new_file):
 def check_up(year, batch_number):
 	"""
 	Make sure data_matrix is being constructed correctly.
-NOTDONE		A) The Log File and the Data Matrix should be of the same length
-NOTDONE		B) Each Document Number in the Log File should be present in Data Matrix
-NOTDONE		C) All words in Data Matrix header should be alphabetic only
+		A) The Log File and the Data Matrix should be of the same length
+		B) Each Document Number in the Log File should be present in Data Matrix
+		C) All words in Data Matrix header should be alphabetic only
 		D) Number of words added recording in Log File should match the number
 		   of columns in the Data Matrix header
 	"""
